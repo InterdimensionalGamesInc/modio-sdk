@@ -35,7 +35,9 @@ namespace asio
 	#define ASIO_NO_TYPEID 1
 
 	#pragma push_macro("ASIO_NO_EXCEPTIONS")
+#ifndef ASIO_NO_EXCEPTIONS
 	#define ASIO_NO_EXCEPTIONS 1
+#endif
 
 	#pragma push_macro("ASIO_DONT_USE_PAUSE")
 	#define ASIO_DONT_USE_PAUSE
