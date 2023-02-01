@@ -11,6 +11,7 @@
 #pragma once
 
 #include "modio/core/ModioCoreTypes.h"
+#include "modio/detail/FilesystemWrapper.h"
 
 namespace Modio
 {
@@ -48,6 +49,8 @@ namespace Modio
 		/// @brief Platform-specific extended initialization parameters. See xref:Platform-specific Notes[] for more
 		/// information regarding any special values your platform requires or supports.
 		std::map<std::string, std::string> ExtendedParameters;
+
+		Modio::filesystem::path CTModRootDirectory;
 	};
 } // namespace Modio
 

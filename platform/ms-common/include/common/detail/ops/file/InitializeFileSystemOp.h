@@ -43,53 +43,63 @@ namespace Modio
 					Self.complete(Modio::make_error_code(Modio::GenericError::OperationCanceled));
 					return;
 				}*/
-				reenter(CoroutineState)
+				if(!InitParams.CTModRootDirectory.empty())
 				{
-					// Get root data path in program data
-					{
-						PWSTR path = NULL;
-
-						HRESULT hr = SHGetKnownFolderPath(FOLDERID_Public, 0, NULL, &path);
-
-						if (SUCCEEDED(hr))
-						{
-							CommonDataPath = Modio::filesystem::path(std::wstring(path));
-							CommonDataPath /= fmt::format("mod.io/");
-							CoTaskMemFree(path);
-						}
-						else
-						{
-							CoTaskMemFree(path);
-							Self.complete(Modio::make_error_code(Modio::FilesystemError::UnableToCreateFolder));
-							return;
-						}
-					}
-
-					// Get user data directory in AppData
-					{
-						Modio::filesystem::path UDF;
-						PWSTR path = NULL;
-
-						HRESULT hr = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &path);
-
-						if (SUCCEEDED(hr))
-						{
-							UDF = Modio::filesystem::path(std::wstring(path));
-							UDF /= Modio::filesystem::path(
-								fmt::format("mod.io/{}/{}/", InitParams.GameID, InitParams.User));
-							CoTaskMemFree(path);
-							UserDataPath = UDF;
-						}
-						else
-						{
-							CoTaskMemFree(path);
-							Self.complete(Modio::make_error_code(Modio::FilesystemError::UnableToCreateFolder));
-							return;
-						}
-					}
-
-					TempPath = Modio::filesystem::temp_directory_path(ec);
+					CommonDataPath = InitParams.CTModRootDirectory / "mod.io" / "common/";
+					UserDataPath = InitParams.CTModRootDirectory / "mod.io" / fmt::format("{}/{}/",InitParams.GameID, InitParams.User);
+					TempPath = InitParams.CTModRootDirectory / "mod.io/tmp/";
 					Self.complete(Modio::ErrorCode {});
+				}
+				else
+				{
+					reenter(CoroutineState)
+					{
+						// Get root data path in program data
+						{
+							PWSTR path = NULL;
+
+							HRESULT hr = SHGetKnownFolderPath(FOLDERID_Public, 0, NULL, &path);
+
+							if (SUCCEEDED(hr))
+							{
+								CommonDataPath = Modio::filesystem::path(std::wstring(path));
+								CommonDataPath /= fmt::format("mod.io/");
+								CoTaskMemFree(path);
+							}
+							else
+							{
+								CoTaskMemFree(path);
+								Self.complete(Modio::make_error_code(Modio::FilesystemError::UnableToCreateFolder));
+								return;
+							}
+						}
+
+						// Get user data directory in AppData
+						{
+							Modio::filesystem::path UDF;
+							PWSTR path = NULL;
+
+							HRESULT hr = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &path);
+
+							if (SUCCEEDED(hr))
+							{
+								UDF = Modio::filesystem::path(std::wstring(path));
+								UDF /= Modio::filesystem::path(
+									fmt::format("mod.io/{}/{}/", InitParams.GameID, InitParams.User));
+								CoTaskMemFree(path);
+								UserDataPath = UDF;
+							}
+							else
+							{
+								CoTaskMemFree(path);
+								Self.complete(Modio::make_error_code(Modio::FilesystemError::UnableToCreateFolder));
+								return;
+							}
+						}
+
+						TempPath = Modio::filesystem::temp_directory_path(ec);
+						Self.complete(Modio::ErrorCode {});
+					}
 				}
 			}
 
