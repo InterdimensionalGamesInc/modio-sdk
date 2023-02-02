@@ -16,6 +16,6 @@
     "MODIO_TARGET_PLATFORM_HEADER=\"Android\""
   ],
   "ModuleDependencies": [
-    "uring", "mbedtls"
+    "mbedtls"
   ]
 }
