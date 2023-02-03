@@ -13,6 +13,7 @@
 #include "modio/detail/AsioWrapper.h"
 #include "modio/detail/ModioOperationQueue.h"
 #include "modio/detail/ModioSDKSessionData.h"
+#include "modio/core/ModioInitializeOptions.h"
 #include <iostream>
 #include <memory>
 
@@ -48,9 +49,10 @@ namespace Modio
 			MODIO_IMPL void destroy(implementation_type& Implementation);
 
 			template<typename CompletionHandler>
-			auto InitializeAsync(CompletionHandler Handler)
+			auto InitializeAsync(Modio::InitializeOptions InitParams, CompletionHandler Handler)
 			{
-				return PlatformImplementation->InitializeHTTPAsync(std::forward<CompletionHandler>(std::move(Handler)));
+				return PlatformImplementation->InitializeHTTPAsync(InitParams,
+																std::forward<CompletionHandler>(std::move(Handler)));
 			}
 
 			template<typename CompletionHandler>

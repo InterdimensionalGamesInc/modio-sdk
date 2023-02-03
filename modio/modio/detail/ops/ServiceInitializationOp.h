@@ -96,7 +96,7 @@ public:
 			}
 
 			yield Modio::Detail::Services::GetGlobalService<Modio::Detail::HttpService>().InitializeAsync(
-				std::move(Self));
+				InitParams, std::move(Self));
 			if (ec)
 			{
 				Modio::Detail::SDKSessionData::Deinitialize();

@@ -64,7 +64,7 @@ namespace Modio
 			virtual ~HttpImplementationBase() {}
 
 			template<typename CompletionToken>
-			auto InitializeHTTPAsync(CompletionToken&& Token)
+			auto InitializeHTTPAsync(Modio::InitializeOptions InitParams, CompletionToken&& Token)
 			{
 				constexpr const wchar_t* ModioAgentString =
 					L"Modio SDK v2 built from " MODIO_COMMIT_HASH ":" MODIO_TARGET_PLATFORM_ID;

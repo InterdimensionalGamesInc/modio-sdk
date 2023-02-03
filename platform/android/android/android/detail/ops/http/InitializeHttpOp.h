@@ -19,6 +19,7 @@
 #include "modio/detail/AsioWrapper.h"
 #include "modio/file/ModioFile.h"
 #include "modio/file/ModioFileService.h"
+#include "modio/detail/FilesystemWrapper.h"
 #include <memory>
 #include <string>
 
@@ -30,10 +31,11 @@ namespace Modio
 		class InitializeHttpOp
 		{
 		public:
-			InitializeHttpOp(std::string UserAgentString, std::shared_ptr<Modio::Detail::HttpSharedState> SharedState)
+			InitializeHttpOp(Modio::filesystem::path BaseCertificatesFolder, std::string UserAgentString, std::shared_ptr<Modio::Detail::HttpSharedState> SharedState)
 				: SharedState(SharedState)
 			{
 				this->SharedState->UserAgentString = UserAgentString;
+				this->CertificatesFolder = BaseCertificatesFolder;
 			}
 
 			template<typename CoroType>
@@ -49,19 +51,22 @@ namespace Modio
 							return;
 						}
 					}
-					if (Modio::Detail::Services::GetGlobalService<Modio::Detail::FileService>().FileExists(
-							"/etc/ssl/certs/ca-certificates.crt"))
+
+					Modio::filesystem::path certificateFilePath = CertificatesFolder / "ca-certificates.crt";
+					const std::string certFilePathStr = certificateFilePath.string();
+					
+					if (Modio::Detail::Services::GetGlobalService<Modio::Detail::FileService>().FileExists(certificateFilePath))
 					{
 						mbedtls_x509_crt_init(&SharedState->CACertificates);
 						int CertParseResult = 0;
 
 						if ((CertParseResult = mbedtls_x509_crt_parse_file(&SharedState->CACertificates,
-																		   "/etc/ssl/certs/ca-certificates.crt")) < 0)
+																		   certFilePathStr.c_str())) < 0)
 						{
 							Modio::Detail::Logger().Log(Modio::LogLevel::Error, Modio::LogCategory::Http,
 														"Could not parse root certificates from "
-														"/etc/ssl/certs/ca-certificates.crt, error {}",
-														CertParseResult * -1);
+														"{0}, error {1}",
+														certFilePathStr.c_str(), CertParseResult * -1);
 							Self.complete(Modio::make_error_code(Modio::HttpError::HttpNotInitialized));
 							return;
 						}
@@ -78,7 +83,7 @@ namespace Modio
 					{
 						Modio::Detail::Logger().Log(
 							Modio::LogLevel::Error, Modio::LogCategory::Http,
-							"Could not load root certificate list from /etc/ssl/certs/ca-certificates.crt");
+							"Could not load root certificate list from {}", certFilePathStr.c_str());
 						Self.complete(Modio::make_error_code(Modio::HttpError::HttpNotInitialized));
 						return;
 					}
@@ -91,6 +96,7 @@ namespace Modio
 			std::unique_ptr<Modio::Detail::File> CertificateFile;
 			asio::coroutine CoroutineState;
 			std::shared_ptr<HttpSharedState> SharedState;
+			Modio::filesystem::path CertificatesFolder;
 		};
 	} // namespace Detail
 } // namespace Modio

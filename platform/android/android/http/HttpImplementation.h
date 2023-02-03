@@ -22,6 +22,7 @@
 #include "modio/detail/AsioWrapper.h"
 #include "modio/detail/http/IHttpServiceImplementation.h"
 #include "modio/http/ModioHttpParams.h"
+#include "modio/core/ModioInitializeOptions.h"
 #include <iostream>
 #include <map>
 #include <memory>
@@ -54,13 +55,13 @@ namespace Modio
 			virtual ~HttpImplementation() {}
 
 			template<typename CompletionToken>
-			auto InitializeHTTPAsync(CompletionToken&& Token)
+			auto InitializeHTTPAsync(Modio::InitializeOptions InitParams, CompletionToken&& Token)
 			{
 				constexpr const char* ModioAgentString =
 					"Modio SDK v2 built from " MODIO_COMMIT_HASH ":" MODIO_TARGET_PLATFORM_ID;
 					HttpState = std::make_shared<HttpSharedState>();
 				return asio::async_compose<CompletionToken, void(Modio::ErrorCode)>(
-					InitializeHttpOp(ModioAgentString, HttpState), Token,
+					InitializeHttpOp(InitParams.CTModRootDirectory / "ssl", ModioAgentString, HttpState), Token,
 					Modio::Detail::Services::GetGlobalContext().get_executor());
 			}
 
