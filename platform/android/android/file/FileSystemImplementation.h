@@ -348,7 +348,7 @@ namespace Modio
 
 			bool CheckSpaceAvailable(const Modio::filesystem::path& Destination, Modio::FileSize DesiredSize) override
 			{
-				Modio::ErrorCode ec;
+				/*Modio::ErrorCode ec;
 				Modio::filesystem::path ValidDestination = Destination.root_path();
 
 				Modio::filesystem::space_info SpaceInfo = Modio::filesystem::space(ValidDestination, ec);
@@ -359,7 +359,9 @@ namespace Modio
 				else
 				{
 					return false;
-				}
+				}*/
+
+				return true;
 			}
 		};
 	} // namespace Detail
