@@ -42,7 +42,8 @@ namespace Modio
 					FileBuffer.Clear();
 					// Special-casing the path to the global settings directory as it should be in the user data folder
 					// but not namespaced to game or game-specific user string
-					if (FileService.FileExists(FileService.UserDataFolder() / "../../globalsettings.json"))
+					// iDGi CHANGE: Don't load the globalsettings.json. rootlocalstoragepath causes too many problems for our usage (OS reinstall case, user folder name change.)
+					/*if (FileService.FileExists(FileService.UserDataFolder() / "../../globalsettings.json"))
 					{
 						ConfigFile = std::make_unique<Modio::Detail::File>(FileService.UserDataFolder() /
 																			   "../../globalsettings.json",
@@ -64,7 +65,7 @@ namespace Modio
 								}
 							}
 						}
-					}
+					}*/
 					// We are either here because there was no file, a zero length file (so ConfigJson is null) or a non
 					// zero length file which either fails to parse or has the rootlocalstoragepath missing(therefore
 					// ConfigJson is non null but invalid) so just recreate it
