@@ -428,6 +428,38 @@ namespace Modio
 		std::function<void(Modio::ErrorCode, Modio::Optional<Modio::ModTagOptions>)> Callback);
 
 	/// @docpublic
+	/// @brief Submits a new tag to a games mod
+	/// @param ModID The mod to submit a tag for
+	/// @param TagName The tag to add
+	/// @param Callback Callback providing a status code to indicate the tag was added successfully
+	/// @requires initialized-sdk
+	/// @requires no-rate-limiting
+	/// @requires authenticated-user
+	/// @errorcategory NetworkError|Couldn't connect to mod.io servers
+	/// @error GenericError::SDKNotInitialized|SDK not initialized
+	/// @errorcategory EntityNotFoundError|Specified mod could not be found
+	/// @error UserDataError::InvalidUser|No authenticated user
+	/// @error HttpError::RateLimited|Too many frequent calls to the API. Wait some time and try again.
+	MODIOSDK_API void AddModTagAsync(Modio::ModID ModID, std::string TagName,
+										   std::function<void(Modio::ErrorCode)> Callback);
+
+	/// @docpublic
+	/// @brief Deletes a tag from a mod
+	/// @param ModID The mod to deleta a tag from
+	/// @param TagName The tag to delete
+	/// @param Callback Callback providing a status code to indicate the tag was deleted successfully
+	/// @requires initialized-sdk
+	/// @requires no-rate-limiting
+	/// @requires authenticated-user
+	/// @errorcategory NetworkError|Couldn't connect to mod.io servers
+	/// @error GenericError::SDKNotInitialized|SDK not initialized
+	/// @errorcategory EntityNotFoundError|Specified mod could not be found
+	/// @error UserDataError::InvalidUser|No authenticated user
+	/// @error HttpError::RateLimited|Too many frequent calls to the API. Wait some time and try again.
+	MODIOSDK_API void DeleteModTagAsync(Modio::ModID ModID, std::string TagName,
+										   std::function<void(Modio::ErrorCode)> Callback);
+
+	/// @docpublic
 	/// @brief For a given Mod ID, fetches a list of any mods that the creator has marked as dependencies
 	/// @param ModID The mod to retrieve dependencies for
 	/// @param Callback Callback providing a status code and an optional xref:ModDependencyList[ModDependencyList]
